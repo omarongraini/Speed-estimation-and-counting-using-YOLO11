@@ -1,6 +1,6 @@
 ## 🚀 Forked Version - Fixes & Updates  
 
-This is a fork of [Original Repo Name] to address compatibility issues with the latest **[ultralytics]** version.  
+This is a fork of **Speed-estimation-and-counting-using-YOLO11** to address compatibility issues with the latest **[ultralytics]** version.  
 
 ### 🔧 Changes in This Fork:  
 ✔ Updated dependencies in `requirements.txt`  
