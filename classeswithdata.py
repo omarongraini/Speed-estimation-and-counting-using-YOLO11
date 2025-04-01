@@ -8,7 +8,7 @@ def RGB(event, x, y, flags, param):
         print(f"Mouse moved to: {point}")
 
 # Open the video file
-cap = cv2.VideoCapture('tf.mp4')
+cap = cv2.VideoCapture(r'test_video.mp4')
 
 # Define region points for counting
 region_points = [(135, 208), (676, 203)]
@@ -16,7 +16,7 @@ region_points = [(135, 208), (676, 203)]
 # Initialize the object counter
 counter = ObjectCounter(
     region=region_points,  # Pass region points
-    model="yolo11s.pt",  # Model for object counting
+    model=r"yolo11s.pt",  # Model for object counting
     classes=[2, 5, 7],  # Detect only person class
     show_in=True,  # Display in counts
     show_out=True,  # Display out counts
@@ -28,14 +28,18 @@ cv2.namedWindow('RGB')
 cv2.setMouseCallback('RGB', RGB)
 
 # Get video properties for saving the output
-frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-fps = int(cap.get(cv2.CAP_PROP_FPS))
+
+frame_width, frame_height, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
 
 # Define the codec and create a VideoWriter object to save the output
-output_file = 'output_video.mp4'
+output_file = r'output_video.mp4'
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Codec for .mp4 files
-out = cv2.VideoWriter(output_file, fourcc, fps, (frame_width, frame_height))
+
+resize_video = (1020, 500)
+if resize_video:
+    out = cv2.VideoWriter(output_file, cv2.VideoWriter_fourcc(*"mp4v"), fps, (1020, 500))
+else:
+    out = cv2.VideoWriter(output_file, cv2.VideoWriter_fourcc(*"mp4v"), fps, (frame_width, frame_height))
 
 while True:
     # Read a frame from the video
@@ -44,7 +48,7 @@ while True:
         break  # Exit the loop if the video ends
 
     # Resize the frame (optional, adjust as needed)
-    frame = cv2.resize(frame, (1020, 500))
+    frame = cv2.resize(frame, resize_video)
 
     # Process the frame with the object counter
     processed_frame = counter.count(frame)

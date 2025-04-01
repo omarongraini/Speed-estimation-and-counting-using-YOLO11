@@ -6,6 +6,7 @@ import torch
 from time import time
 from ultralytics.solutions.solutions import BaseSolution
 from ultralytics.utils.plotting import Annotator, colors
+from ultralytics.solutions.solutions import BaseSolution, SolutionAnnotator, SolutionResults
 
 class ObjectCounter(BaseSolution):
     def __init__(self, **kwargs):
@@ -164,9 +165,11 @@ class ObjectCounter(BaseSolution):
             self.initialize_region()
             self.region_initialized = True
 
-        self.annotator = Annotator(im0, line_width=self.line_width)
+        self.annotator = SolutionAnnotator(im0, line_width=self.line_width)  # Initialize annotator
         self.extract_tracks(im0)
-        self.annotator.draw_region(reg_pts=self.region, color=(104, 0, 123), thickness=self.line_width * 2)
+        self.annotator.draw_region(
+            reg_pts=self.region, color=(104, 0, 123), thickness=self.line_width * 2
+        )  # Draw region
 
         for box, track_id, cls in zip(self.boxes, self.track_ids, self.clss):
             self.store_tracking_history(track_id, box)
@@ -177,7 +180,7 @@ class ObjectCounter(BaseSolution):
                 self.trk_pp[track_id] = self.track_line[-1]
 
             speed_label = f"{int(self.spd[track_id])} km/h" if track_id in self.spd else self.names[int(cls)]
-            self.annotator.draw_centroid_and_tracks(self.track_line, color=colors(int(track_id), True), track_thickness=self.line_width)
+            self.annotator.box_label(box, label=self.names[cls], color=colors(cls, True))
             if self.LineString([self.trk_pp[track_id], self.track_line[-1]]).intersects(self.r_s):
                 direction = "known"
             else:
